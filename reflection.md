@@ -1,6 +1,11 @@
 # PawPal+ Project Reflection
 
 ## 1. System Design
+** Core user action
+
+1. ADD a pet - enter the pet's name and type.
+2. ADD a task - add a care task like a walk or feeding, with how long it takes and how important it is.
+3. SEE today's plan - press a button to get a daily schedule of task in order.
 
 **a. Initial design**
 

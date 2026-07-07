@@ -1,52 +1,86 @@
-"""PawPal+ core system classes (skeleton).
+"""PawPal+ core system classes.
 
-Generated from the UML draft in diagrams/uml_draft.mmd.
-Method bodies are stubs to be implemented next.
+A small pet-care planner:
+  Owner has many Pets, each Pet has many Tasks.
+  The Scheduler is the controller that works across all of an owner's pets.
 """
 
-from dataclasses import dataclass
-
-
-@dataclass
-class Pet:
-    name: str
-    species: str  # "dog", "cat", or "other"
-
-    def describe(self) -> str:
-        """Return a short label like 'Mochi (cat)'."""
-        ...
+from dataclasses import dataclass, field
 
 
 @dataclass
 class Task:
-    title: str
-    duration: int  # minutes
-    priority: str  # "low", "medium", or "high"
+    """A single pet care activity."""
 
-    def priority_score(self) -> int:
-        """Convert priority into a number so tasks can be sorted."""
-        ...
+    description: str          # e.g. "Morning walk"
+    time: int                 # how long it takes, in minutes
+    frequency: str            # e.g. "daily", "weekly"
+    completed: bool = False   # completion status
+
+    def mark_complete(self) -> None:
+        """Mark this task as done."""
+        self.completed = True
+
+    def mark_incomplete(self) -> None:
+        """Reset this task back to not done."""
+        self.completed = False
+
+
+@dataclass
+class Pet:
+    """A pet and the list of care tasks that belong to it."""
+
+    name: str
+    species: str                              # "dog", "cat", or "other"
+    tasks: list[Task] = field(default_factory=list)
+
+    def add_task(self, task: Task) -> None:
+        """Attach a care task to this pet."""
+        self.tasks.append(task)
+
+    def describe(self) -> str:
+        """Return a short label like 'Mochi (cat)'."""
+        return f"{self.name} ({self.species})"
 
 
 @dataclass
 class Owner:
-    name: str
-    available_minutes: int  # time free for pet care today
+    """The person who manages one or more pets."""
 
-    def get_available_minutes(self) -> int:
-        """Return how much time the owner has for tasks today."""
-        ...
+    name: str
+    pets: list[Pet] = field(default_factory=list)
+
+    def add_pet(self, pet: Pet) -> None:
+        """Add a pet for this owner."""
+        self.pets.append(pet)
+
+    def get_all_tasks(self) -> list[Task]:
+        """Collect every task across all of the owner's pets."""
+        all_tasks: list[Task] = []
+        for pet in self.pets:
+            all_tasks.extend(pet.tasks)
+        return all_tasks
 
 
 class Scheduler:
-    def __init__(self, tasks: list[Task], available_time: int):
-        self.tasks = tasks
-        self.available_time = available_time
+    """Main controller: retrieves and organizes tasks across all pets."""
 
-    def build_plan(self) -> list[Task]:
-        """Pick and order tasks by priority and available time."""
-        ...
+    def __init__(self, owner: Owner):
+        """Create a scheduler that works over the given owner's pets and tasks."""
+        self.owner = owner
 
-    def explain(self) -> str:
-        """Explain why each task was chosen and when it happens."""
-        ...
+    def get_all_tasks(self) -> list[Task]:
+        """Ask the owner for every task across their pets."""
+        return self.owner.get_all_tasks()
+
+    def pending_tasks(self) -> list[Task]:
+        """Return only the tasks that still need to be done."""
+        return [task for task in self.get_all_tasks() if not task.completed]
+
+    def completed_tasks(self) -> list[Task]:
+        """Return only the tasks that are already done."""
+        return [task for task in self.get_all_tasks() if task.completed]
+
+    def tasks_by_frequency(self, frequency: str) -> list[Task]:
+        """Return tasks that match a given frequency (e.g. 'daily')."""
+        return [task for task in self.get_all_tasks() if task.frequency == frequency]
