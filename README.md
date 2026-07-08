@@ -46,13 +46,22 @@ pip install -r requirements.txt
 
 Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
 
-```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
-```
+----------------------------------------
+            TODAY'S SCHEDULE            
+             Owner: Jordan              
+----------------------------------------
+
+🐾 Biscuit — dog
+   [ ] Morning walk          30 min
+   [ ] Feeding               10 min
+
+🐾 Mochi — cat
+   [ ] Feeding                5 min
+
+----------------------------------------
+Total: 3 tasks, 45 minutes of care today.
+----------------------------------------
+
 
 ## 🧪 Testing PawPal+
 
@@ -72,14 +81,24 @@ Sample test output:
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
+The scheduling logic lives on the `Scheduler` class in `pawpal_system.py`. Here's
+what I built and where each part lives.
 
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+**Sorting** — `Scheduler.sorted_by_time()` sorts tasks by how long they take
+(shortest first, or longest with `ascending=False`). `Scheduler.sorted_by_start_time()`
+sorts them by time of day.
+
+**Filtering** — `Scheduler.filter_tasks()` filters tasks by pet, by completion
+status, or by frequency. You can pass a pet name or leave an argument out to
+skip that filter.
+
+**Conflict detection** — `Scheduler.detect_conflicts()` finds tasks whose times
+overlap (including two booked at the same minute). `Scheduler.conflict_warnings()`
+turns those into plain warning messages instead of crashing.
+
+**Recurring tasks** — `Scheduler.complete_task()` marks a task done and, if it's
+daily or weekly, automatically adds the next one. `Task.next_occurrence()` works
+out the new date with `timedelta`.
 
 ## 📸 Demo Walkthrough
 

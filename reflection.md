@@ -10,13 +10,29 @@
 **a. Initial design**
 
 - Briefly describe your initial UML design.
+My first UML design had four classes:
+PET - holds the pet's name and type.
+TASK - holds one care task: its title, how long it takes, and its priority.
+Owner - holds the owner's name and how much time they have that day.
+Scheduler - takes the tasks and the owner's time and builds the daily plan.
+
 - What classes did you include, and what responsibilities did you assign to each?
+
+I made Pet, Task, and Owner simple classes that just hold info, and let the Scheduler do the actual work of picking and ordering tasks into a plan.
 
 **b. Design changes**
 
 - Did your design change during implementation?
+
+Yes, my design changed. At first my four classes didn't connect to each other, so I fixed three things:
+
 - If yes, describe at least one change and why you made it.
 
+1. I gave Owner lists of its pets and tasks, so the owner actually holds them.
+2. I made Scheduler take the Owner instead of a separate time number, so the time is only stored in one place.
+3. I added a Plan class to hold the finished schedule — which tasks got a time and which got skipped.
+
+I did this because the original classes couldn't talk to each other, so there was no way to build a real plan.
 ---
 
 ## 2. Scheduling Logic and Tradeoffs
@@ -30,6 +46,12 @@
 
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
+
+My scheduler warns about any two tasks that overlap in time, even if they belong
+to different pets. I did this because one person can't really walk the dog and
+feed the cat at the same minute. The downside is it sometimes warns when it
+doesn't need to, like a nap that I don't have to sit there for. I figured it's
+better to get an extra warning than to miss a real clash and forget to feed a pet.
 
 ---
 
